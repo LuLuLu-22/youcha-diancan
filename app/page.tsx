@@ -3,7 +3,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
-// --- 1. 类型定义 ---
 type ItemCategory = 'base' | 'side';
 
 type MenuItem = { 
@@ -17,7 +16,6 @@ type MenuItem = {
 
 type CartItem = MenuItem & { quantity: number; };
 
-// --- 2. 注入分类后的数据 ---
 const MENU_DATA: MenuItem[] = [
   { id: 1, name: '正宗原汤油茶 (小碗)', description: '标准份量。老叶红茶、生姜、大蒜铁锅手工捶打。初饮微苦，而后回甘。', price: 15.0, imageUrl: '/image/chatang.png', type: 'base' },
   { id: 2, name: '正宗原汤油茶 (大碗)', description: '畅饮大满足！适合资深油茶爱好者，茶汤浓郁，回味悠长。', price: 22.0, imageUrl: '/image/chatang.png', type: 'base' },
@@ -73,15 +71,16 @@ export default function OrderPage() {
   };
 
   return (
-    /* 核心修复 1：手机端使用 min-h-screen 允许正常滑动，平板端 (md:) 才锁定 h-screen 和 overflow-hidden */
-    <div className="min-h-screen md:h-screen bg-stone-100 text-stone-800 font-sans flex flex-col md:overflow-hidden">
+    /* 核心修复：手机端就是一个普通的 block 元素，随内容自然撑开，不再使用 flex 和 h-screen；
+       只有在平板 md 以上屏幕，才开启 md:h-screen 锁定屏幕排版 */
+    <div className="bg-stone-100 text-stone-800 font-sans pb-12 md:pb-0 md:h-screen md:flex md:flex-col md:overflow-hidden">
       
       <style dangerouslySetInnerHTML={{__html: `
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
       `}} />
 
-      <header className="bg-emerald-800 text-stone-50 pt-8 pb-10 px-4 md:px-8 relative overflow-hidden shadow-md flex-shrink-0 z-10">
+      <header className="bg-emerald-800 text-stone-50 pt-8 pb-10 px-4 md:px-8 relative overflow-hidden shadow-md md:flex-shrink-0 z-10">
         <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-700 rounded-full blur-3xl opacity-50 -translate-y-1/2 translate-x-1/3"></div>
         <div className="max-w-7xl mx-auto relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
@@ -98,11 +97,11 @@ export default function OrderPage() {
         </div>
       </header>
 
-      {/* 核心修复 2：手机端允许超出，平板端隐藏溢出 */}
-      <main className="flex-grow flex flex-col md:flex-row max-w-7xl w-full mx-auto p-4 md:p-6 gap-6 md:overflow-hidden">
+      {/* 核心修复：手机端正常块级布局，平板端开启横向 flex-row 左右分屏 */}
+      <main className="max-w-7xl w-full mx-auto p-4 md:p-6 md:flex-1 md:flex md:flex-row md:gap-6 md:overflow-hidden">
         
-        {/* 菜单列表区 */}
-        <section className="flex-1 md:overflow-y-auto hide-scrollbar">
+        {/* 左侧菜单区 */}
+        <section className="mb-8 md:mb-0 md:flex-1 md:overflow-y-auto hide-scrollbar">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
             {MENU_DATA.map((item) => {
               const isDisabled = item.type === 'side' && !hasBaseInCart;
@@ -151,8 +150,8 @@ export default function OrderPage() {
           </div>
         </section>
 
-        {/* 核心修复 3：购物车区域，手机端靠边距隔开并设定最大高度，平板端高度占满 (md:h-full) */}
-        <aside className="w-full md:w-80 lg:w-96 flex-shrink-0 md:h-full flex flex-col bg-[#fcfaf8] rounded-2xl shadow-lg border border-stone-200 overflow-hidden mb-8 md:mb-0">
+        {/* 右侧购物车区：手机端随文档流在最下面，高度自适应 */}
+        <aside className="w-full md:w-80 lg:w-96 flex flex-col bg-[#fcfaf8] rounded-2xl shadow-lg border border-stone-200 overflow-hidden md:h-full md:flex-shrink-0">
           
           <div className="bg-amber-100/50 p-4 border-b border-amber-200/50 flex justify-between items-center flex-shrink-0">
             <h2 className="text-base font-bold text-amber-900 flex items-center gap-2">
@@ -163,7 +162,6 @@ export default function OrderPage() {
             </span>
           </div>
 
-          {/* 手机端购物车高度限制 max-h-[50vh]，避免过长 */}
           <div className="flex-grow overflow-y-auto hide-scrollbar p-4 space-y-3 max-h-[50vh] md:max-h-none">
             {cart.length === 0 ? (
               <div className="h-full flex flex-col items-center justify-center text-stone-400 space-y-3 py-6">
