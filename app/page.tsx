@@ -21,7 +21,7 @@ type CartItem = MenuItem & { quantity: number; };
 const MENU_DATA: MenuItem[] = [
   { 
     id: 1, 
-    name: '瑶乡原汤油茶 (小碗)', 
+    name: '正宗原汤油茶 (小碗)', 
     description: '标准份量。老叶红茶、生姜、大蒜铁锅手工捶打。初饮微苦，而后回甘。',
     price: 15.0, 
     imageUrl: '/image/chatang.png',
@@ -29,7 +29,7 @@ const MENU_DATA: MenuItem[] = [
   },
   { 
     id: 2, 
-    name: '瑶乡原汤油茶 (大碗)', 
+    name: '正宗原汤油茶 (大碗)', 
     description: '畅饮大满足！适合资深油茶爱好者，茶汤浓郁，回味悠长。',
     price: 22.0, 
     imageUrl: '/image/chatang.png',
@@ -37,7 +37,7 @@ const MENU_DATA: MenuItem[] = [
   },
   { 
     id: 3, 
-    name: '手工金黄油果', 
+    name: '美味金黄油果', 
     description: '油茶的灵魂伴侣。金黄酥脆，泡入滚烫的茶汤中吸满姜香与茶香。',
     price: 8.0, 
     imageUrl: '/image/youguo.png',
@@ -53,7 +53,7 @@ const MENU_DATA: MenuItem[] = [
   },
   { 
     id: 5, 
-    name: '农家红衣花生', 
+    name: '农家酥脆花生', 
     description: '农家自种红皮小花生，小火慢焙至酥脆，越嚼越香，提升层次感。',
     price: 6.0, 
     imageUrl: '/image/huasheng.png',
@@ -61,7 +61,7 @@ const MENU_DATA: MenuItem[] = [
   },
   { 
     id: 6, 
-    name: '提鲜葱花芫荽', 
+    name: '提鲜葱花', 
     description: '新鲜切段的本地香葱与香菜，热茶一激，瞬间释放出清本植物香气。',
     price: 2.0, 
     imageUrl: '/image/conghua.png',
