@@ -73,16 +73,14 @@ export default function OrderPage() {
   };
 
   return (
-    /* 改动1：h-screen 锁定全屏高度，overflow-hidden 禁止全局滚动 */
-    <div className="h-screen bg-stone-100 text-stone-800 font-sans flex flex-col overflow-hidden">
+    /* 核心修复 1：手机端使用 min-h-screen 允许正常滑动，平板端 (md:) 才锁定 h-screen 和 overflow-hidden */
+    <div className="min-h-screen md:h-screen bg-stone-100 text-stone-800 font-sans flex flex-col md:overflow-hidden">
       
-      {/* 隐藏滚动条的魔法 CSS */}
       <style dangerouslySetInnerHTML={{__html: `
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
       `}} />
 
-      {/* 文化沉浸式 Header 区 (压缩了高度，给菜品留出更多空间) */}
       <header className="bg-emerald-800 text-stone-50 pt-8 pb-10 px-4 md:px-8 relative overflow-hidden shadow-md flex-shrink-0 z-10">
         <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-700 rounded-full blur-3xl opacity-50 -translate-y-1/2 translate-x-1/3"></div>
         <div className="max-w-7xl mx-auto relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -100,19 +98,18 @@ export default function OrderPage() {
         </div>
       </header>
 
-      {/* 主体内容区：使用 flex-grow 填满剩余高度 */}
-      <main className="flex-grow flex flex-col md:flex-row max-w-7xl w-full mx-auto p-4 md:p-6 gap-6 overflow-hidden">
+      {/* 核心修复 2：手机端允许超出，平板端隐藏溢出 */}
+      <main className="flex-grow flex flex-col md:flex-row max-w-7xl w-full mx-auto p-4 md:p-6 gap-6 md:overflow-hidden">
         
-        {/* 左侧：菜单列表 (独立滚动区) */}
-        <section className="flex-1 overflow-y-auto hide-scrollbar pb-10">
-          {/* 改动2：响应式网格。竖屏2列 (sm)，横屏3列 (lg) */}
+        {/* 菜单列表区 */}
+        <section className="flex-1 md:overflow-y-auto hide-scrollbar">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
             {MENU_DATA.map((item) => {
               const isDisabled = item.type === 'side' && !hasBaseInCart;
 
               return (
                 <div key={item.id} className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow border border-stone-200 flex flex-col group">
-                  <div className="relative h-40 md:h-44 overflow-hidden bg-stone-200">
+                  <div className="relative h-48 md:h-44 overflow-hidden bg-stone-200">
                     <img 
                       src={item.imageUrl} 
                       alt={item.name} 
@@ -154,10 +151,9 @@ export default function OrderPage() {
           </div>
         </section>
 
-        {/* 右侧：购物车 (改动3：固定宽度 w-80 或 w-96，保持不动) */}
-        <aside className="w-full md:w-80 lg:w-96 flex-shrink-0 h-full flex flex-col bg-[#fcfaf8] rounded-2xl shadow-lg border border-stone-200 overflow-hidden">
+        {/* 核心修复 3：购物车区域，手机端靠边距隔开并设定最大高度，平板端高度占满 (md:h-full) */}
+        <aside className="w-full md:w-80 lg:w-96 flex-shrink-0 md:h-full flex flex-col bg-[#fcfaf8] rounded-2xl shadow-lg border border-stone-200 overflow-hidden mb-8 md:mb-0">
           
-          {/* 购物车头部 */}
           <div className="bg-amber-100/50 p-4 border-b border-amber-200/50 flex justify-between items-center flex-shrink-0">
             <h2 className="text-base font-bold text-amber-900 flex items-center gap-2">
               <span className="text-xl">🍵</span> 当前茶档
@@ -167,10 +163,10 @@ export default function OrderPage() {
             </span>
           </div>
 
-          {/* 购物车列表 (独立滚动区) */}
-          <div className="flex-grow overflow-y-auto hide-scrollbar p-4 space-y-3">
+          {/* 手机端购物车高度限制 max-h-[50vh]，避免过长 */}
+          <div className="flex-grow overflow-y-auto hide-scrollbar p-4 space-y-3 max-h-[50vh] md:max-h-none">
             {cart.length === 0 ? (
-              <div className="h-full flex flex-col items-center justify-center text-stone-400 space-y-3">
+              <div className="h-full flex flex-col items-center justify-center text-stone-400 space-y-3 py-6">
                 <div className="w-16 h-16 border-4 border-dashed border-stone-300 rounded-full flex items-center justify-center text-2xl">🥣</div>
                 <p className="text-sm font-medium">请先选择一碗油茶打底</p>
               </div>
@@ -185,7 +181,6 @@ export default function OrderPage() {
                     <div className="text-xs text-emerald-600 font-bold mt-1">¥{(item.price * item.quantity).toFixed(2)}</div>
                   </div>
                   
-                  {/* 针对触摸屏优化的加减按钮 */}
                   <div className="flex items-center gap-1 bg-stone-50 border border-stone-200 rounded-lg p-1">
                     <button onClick={() => handleUpdateQuantity(item.id, -1)} className="w-8 h-8 flex items-center justify-center text-stone-500 hover:text-amber-600 hover:bg-amber-50 rounded-md transition-colors text-lg active:bg-stone-200">-</button>
                     <span className="w-6 text-center text-sm font-bold text-stone-700">{item.quantity}</span>
@@ -196,7 +191,6 @@ export default function OrderPage() {
             )}
           </div>
 
-          {/* 结算底栏 */}
           <div className="p-4 md:p-5 border-t border-stone-200 bg-white flex-shrink-0 shadow-[0_-10px_15px_-3px_rgba(0,0,0,0.05)]">
             <div className="flex justify-between items-end mb-4">
               <span className="text-stone-500 text-sm font-medium">合计香资：</span>
